@@ -1,0 +1,45 @@
+#subject-select-group  .select2-selection--single{
+        padding: 6px;
+        height: 39px;
+}
+
+.input-group-append{
+        margin-left: -2px;
+}
+
+#subject-select-group .btn {
+        font-size: 24px;
+        line-height: 24px;
+}
+
+#article-search-table_filter{
+        width: 100%;
+} 
+
+#article-search-table_filter label{
+        width: 100%;
+} 
+
+#article-search-table_filter label input{
+        width: 100%;
+} 
+
+#article-search-table tr{
+        cursor: pointer;
+}
+
+#article-search-table tr:hover{
+        background-color: #f3fff3;		
+}
+
+#available_items_search_datatable tr{
+        cursor: pointer;
+}
+
+#available_items_search_datatable tr:hover{
+        background-color: #f3fff3;		
+}
+
+.dataTable  tr.even{
+        background-color: #f6f6f6;		
+}

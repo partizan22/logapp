@@ -1,0 +1,260 @@
+<?php
+
+namespace BTF\DB\SQL;
+
+class SQLQuery
+{
+    protected $type;
+    protected $select;
+    protected $flags;
+    protected $from;
+    protected $joins;
+    protected $where;
+    protected $group_by;
+    protected $having;
+    protected $order_by;
+    protected $limit;
+    protected $offset;
+            
+    function __construct($type='SELECT') {
+        $type->type = $type;
+        $this->flags = [];
+        $this->select = [];
+        $this->from = [];
+        $this->joins = [];
+        $this->where = [];
+        $this->group_by = [];
+        $this->having = [];
+        $this->order_by = [];
+        $this->limit = FALSE;
+        $this->offset = 0;
+    }
+    
+    /**
+     * @return SQLQuery
+     */
+    public static function SELECT($list)
+    {
+        $q = new SQLQuery();
+        return $q->select($list);
+    }
+    
+    /**
+     * @return SQLQuery
+     */
+    public function select($list)
+    {
+        if (!is_array($list))
+        {
+            $list = [$list];
+        }
+        
+        foreach ($list as $k=>$i)
+        {
+            if (!is_object($i))
+            {
+                $i = SQLExpression::F($i);
+            }
+            
+            if (is_int($k))
+            {
+                $this->select[] = $i;
+            }
+            else
+            {
+                $this->select[] = SQLExpression::_AS($i, $k);
+            }
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return SQLQuery
+     */
+    public function from($from)
+    {
+        if (!is_array($from))
+        {
+            $from = [$from];
+        }
+        
+        foreach ($from as $k=>$i)
+        {
+            if (!is_object($i))
+            {
+                $i = SQLExpression::F($i);
+            }
+            
+            if (is_int($k))
+            {
+                $this->from[] = $i;
+            }
+            else
+            {
+                $this->from[] = SQLExpression::_AS($i, $k);
+            }
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return SQLQuery
+     */
+    public function where($where)
+    {
+        if (is_object($where))
+        {
+            $this->where[] = $where;
+        }
+        elseif (is_array($where))
+        {
+            $list = [];
+            foreach ($where as $k=>$v)
+            {
+                $list[] = SQLExpression::Eq(
+                    SQLExpression::F($k), SQLExpression::V($v)
+                );
+            }
+            $this->where[] = SQLExpression::_AND($list);
+        }
+        else{
+            $this->where[] = SQLExpression::E($where);
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return SQLQuery
+     */
+    public function order_by($field, $order){
+        if (!is_object($field))
+        {
+            $field = SQLExpression::F($field);
+        }
+        
+        if (is_numeric($order))
+        {
+            $order = $order > 0 ? 'ASC' : 'DESC';
+        }
+        
+        $this->order_by[] = [$field, $order];
+        
+        return $this;
+    }
+    
+    /**
+     * @return SQLQuery
+    */
+   public function limit($limit, $offset=0)
+   {
+       $this->limit = $limit;
+       $this->offset = $offset;
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   public function build($provider)
+   {
+       return call_user_func([$this, "_type_" . strtolower($this->type)], $provider);
+   }
+   
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_flags($provider)
+   {
+        return implode(' ', $this->flags);
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_select_list($provider)
+   {
+        return SQLExpression::_list($this->select, ', ')->_toString($provider);
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_from($provider)
+   {
+        return SQLExpression::_list($this->from, ', ')->_toString($provider);
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_joins($provider)
+   {
+        return '';
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_where($provider)
+   {
+        if (empty($this->where))
+        {
+            return '';
+        }
+        
+        return 'WHERE ' . SQLExpression::_AND($this->where)->_toString($provider);
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_limit($provider)
+   {
+        if (empty($this->limit))
+        {
+            return '';
+        }
+        
+        return "LIMIT {$this->limit}, {$this->offset}";
+   }
+   
+   /**
+    * @param Provider $provider
+    */
+   protected function build_order_by($provider)
+   {
+        if (empty($this->order_by))
+        {
+            return '';
+        }
+        
+        $list = [];
+        
+        foreach ($this->order_by as $o)
+        {
+            $list[] = $o[0]->_toString($provider) . ' ' . $o[1];
+        }
+        
+        return 'ORDER BY ' . implode(',', $list);
+   }
+
+
+   /**
+    * @param Provider $provider
+    */
+   protected function _type_select($provider)
+   {
+       return "SELECT {$this->build_flags($provider)} {$this->build_select_list($provider)}\n"
+       . "FROM {$this->build_from($provider)}\n"
+       . "{$this->build_joins($provider)}\n"
+       . "{$this->build_where($provider)}\n"
+       . "{$this->build_order_by($provider)}\n"
+       . "{$this->build_limit($provider)}\n";
+   }
+           
+   
+    
+}
