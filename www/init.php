@@ -18,6 +18,6 @@ spl_autoload_register(function ($class) {
 
 AppGlobal::i();
 
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 
 $_SESSION['account_id'] = 1;
