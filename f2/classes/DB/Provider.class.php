@@ -60,4 +60,9 @@ class Provider {
     {
         
     }
+	
+	public function _connection() 
+	{
+		return $this->connection;
+	}
 }

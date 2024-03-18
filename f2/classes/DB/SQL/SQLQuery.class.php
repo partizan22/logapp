@@ -10,7 +10,7 @@ class SQLQuery extends _SQLQuery
     public static function SELECT($list = '*')
     {
         $q = self::__static_construct();
-        return $q->_select($list);
+        return $q->fields($list);
     }
     
     /**
