@@ -14,7 +14,7 @@ class SQLExpression
     
     public function is_null_expression()
     {
-        return ($this->type == 'expression') && (count($this->args == 1) && ($this->args[0] == 'NULL'));
+        return ($this->type == 'expression') && (count($this->args) == 1) && ($this->args[0] == 'NULL');
     }
 	
     /**

@@ -12,9 +12,20 @@
 		public static $account_id = 3;
 
 		public function __construct() {
-            
-            $this->_db = BTF\DB\MySQLiProvider::connect('localhost', 'root', 'root');
-            $this->_db->use_db( strpos($_SERVER['HTTP_HOST'], 'logappdev') !== false ? 'logapp_dev' : 'logapp');
+           
+			$db_host = getenv('DB_HOST');
+			$db_name = getenv('DB_NAME');
+			$db_user = getenv('DB_USER');
+			
+			// Read the password file path from an environment variable
+			$password_file_path = getenv('PASSWORD_FILE_PATH');
+
+			// Read the password from the file
+			$db_pass = trim(file_get_contents($password_file_path));
+			
+            $this->_db = BTF\DB\MySQLiProvider::connect($db_host, $db_user, $db_pass);
+			
+            $this->_db->use_db(  $db_name );
             
         }
         
