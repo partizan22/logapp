@@ -77,5 +77,9 @@
             echo json_encode($result);
         }
         
-        
+        public function redirect($url)
+		{
+			header('Location: ' . $url);
+			exit();
+		}
     }

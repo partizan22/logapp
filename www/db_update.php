@@ -1,8 +1,8 @@
 <?php
 
-chdir(dirname(__FILE__));
-
-include "init.php";
+//chdir(dirname(__FILE__));
+//
+//include "init.php";
 
 $res = \AppGlobal::db()->query(BTF\DB\SQL\SQLQuery::SELECT()->from('migrations'));
 $existing = [];
