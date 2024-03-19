@@ -81,6 +81,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Copy the app dependencies from the previous install stage.
 COPY --from=deps app/vendor/ /var/www/vendor
 # Copy the app files from the app directory.
+COPY ./.git /var/www/.git
 COPY ./www /var/www/html
 COPY ./f2 /var/www/f2
 COPY ./migrations /var/www/migrations
