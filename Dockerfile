@@ -47,7 +47,7 @@ RUN docker-php-ext-install pdo mysqli pdo_mysql
 RUN apt-get update
 RUN apt-get install -y libzip-dev
 RUN docker-php-ext-install zip
-RUN apt-get -y install git
+
 
 # Your PHP application may require additional PHP extensions to be installed
 # manually. For detailed instructions for installing extensions can be found, see
@@ -81,15 +81,13 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Copy the app dependencies from the previous install stage.
 COPY --from=deps app/vendor/ /var/www/vendor
 # Copy the app files from the app directory.
-COPY ./.git /var/www/.git
 COPY ./www /var/www/html
 COPY ./f2 /var/www/f2
 COPY ./migrations /var/www/migrations
 
-RUN git config --global --add safe.directory /var/www
 
 # Switch to a non-privileged user (defined in the base image) that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
-#USER www-data
+USER www-data
 
 
