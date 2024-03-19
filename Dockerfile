@@ -86,6 +86,7 @@ COPY ./www /var/www/html
 COPY ./f2 /var/www/f2
 COPY ./migrations /var/www/migrations
 
+RUN git config --global --add safe.directory /var/www
 
 # Switch to a non-privileged user (defined in the base image) that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
