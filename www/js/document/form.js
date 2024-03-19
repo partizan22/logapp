@@ -349,6 +349,18 @@ function create_article(){
 
 function submit()
 {
+    if (!$('[name=number]').val())
+    {
+        alert('Введіть номер документу!');
+        return ;
+    }
+    
+    if (!$('[name=date]').val())
+    {
+        alert('Введіть дату документу!');
+        return ;
+    }
+    
     if (subject_required && ! $('[name=subject_id]').val() )
     {
         alert('Виберіть підрозділ!');
