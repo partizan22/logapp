@@ -47,7 +47,7 @@ RUN docker-php-ext-install pdo mysqli pdo_mysql
 RUN apt-get update
 RUN apt-get install -y libzip-dev
 RUN docker-php-ext-install zip
-RUN docker-php-ext-install git
+RUN apt-get -y install git
 
 # Your PHP application may require additional PHP extensions to be installed
 # manually. For detailed instructions for installing extensions can be found, see
