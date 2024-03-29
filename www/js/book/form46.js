@@ -20,7 +20,7 @@ function draw()
     header += '<th colspan="'+ (show_categories ? 6 : 1) +'" rowspan="2" class="h-header h-in_book_total" >'+ lang.in_book_total +'</th>';
     header += '<th colspan="'+ (dpc * (show_categories ? 6 : 1)) +'" class="h-header">' + lang.in_departments_h + '</th>';
     header += '</tr><tr>';
-    header += '<th class="h-in-starage">' + lang.in_starage  + '</th>';
+    header += '<th class="h-in-starage" colspan="'+ (show_categories ? 6 : 1) +'">' + lang.in_starage  + '</th>';
     if (show_departments)
     {
         for (var d of departments)
@@ -105,6 +105,10 @@ function draw()
             if (k === 'name')
             {
                 v = document_names[row.document['type']];
+            }
+            if (!v)
+            {
+                v = '';
             }
             body += '<td>'+ v +'</td>';
         }
