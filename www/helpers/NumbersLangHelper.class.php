@@ -106,5 +106,15 @@
 			return self::lang_number($number, $gend) . ' ' . $text . self::num_ending($number, $one, $two, $five);
 		}
 		
+		public static function lang_price($price)
+		{
+			$number = number_format($price, 2, '.', '');
+			$e = explode('.', $number);
+			return self::number_with_text($e[0], '', 'гривня', 'гривні', 'гривень', 'female') . ' ' .
+					self::number_with_text((int)$e[1], '', 'копійка', 'копійки', 'копійок', 'female') ;
+		}
+		
+		
+		
 		
 	}

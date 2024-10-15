@@ -70,12 +70,17 @@
 		public function output_item($class)
 		{
 			$item = $this->items[$this->index ++];
+			$d = '';
+			if (!empty($item['desc']))
+			{
+				$d = "<small class=\"form-text text-muted\">{$item['desc']}.</small>";
+			}
 			
 			echo "<div class='form-group {$class}'>
 				<label >{$item['title']}:</label>
 				";
 				$this->input($item);
-			echo "
+			echo "$d
 			</div>";
 		}
 		
@@ -101,7 +106,16 @@
 		
 		protected function select($item)
 		{
+			if (isset($item['options_t']))
+			{
+				$item['options'] = [];
+				foreach ($item['options_t'] as $t)
+				{
+					$item['options'][$t] = $t;
+				}
+			}
 			$item += ['options' => []];
+			
 			echo "<select name='{$item['name']}' class='form-control {$item['ad_class']}'>";
 			foreach ($item['options'] as $name => $title)
 			{

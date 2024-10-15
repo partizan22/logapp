@@ -4,6 +4,10 @@
 
 class ExcelHelper
 {
+	/**
+	 * 
+	 * @var PHPExcel_Worksheet
+	 */
     public $sheet;
     public $xls;
 
@@ -112,6 +116,17 @@ class ExcelHelper
 
         $objWriter->save('php://output');
         exit();
+    }
+	
+	/**
+     * @param $filename
+     */
+    public  function save($filename)
+    {
+        $objWriter = new PHPExcel_Writer_Excel2007($this->xls);
+		//$objWriter->setPreCalculateFormulas(); 
+
+        $objWriter->save($filename);
     }
 
 }

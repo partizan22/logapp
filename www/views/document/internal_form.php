@@ -16,7 +16,7 @@
 	};
 	
 	var subject_type = 'department';
-	var from_department  = 'store';
+	var from_department  = 'storage';
 	var items_editable = false;
 	var subject_required = true;
 	
