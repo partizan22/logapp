@@ -81,6 +81,8 @@
 	<a href="/document/form/?type=income<?= !empty($item_id) ? "&add_item={$item_id}" : ''  ?>" class="btn"><button class="btn">Нова приходна накладна</button></a>
 	<a href="/document/form/?type=internal<?= !empty($item_id) ? "&add_item={$item_id}" : ''  ?>" class="btn"><button class="btn">Нова внутрішня накладна</button></a>
 	<a href="/document/form/?type=outcome<?= !empty($item_id) ? "&add_item={$item_id}" : ''  ?>" class="btn"><button class="btn">Нова вихідна накладна</button></a>
+	
+	<a href="/book/refresh_book_records/?item_id=<?= $item_id ?>" class="btn badge-danger">Перерахувати</a>
 
 	<div style="height: 20px"></div>
 	<input type="checkbox" class="show-departments" onchange="draw()"> Показати підрозділи <br />

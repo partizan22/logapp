@@ -111,6 +111,12 @@ function set_page_title(title)
 }
 
 function date_render(date, type){
+        
+    if (!type)
+    {
+        type = 'display';
+    }
+    
     switch (type)
     {
         case 'display':

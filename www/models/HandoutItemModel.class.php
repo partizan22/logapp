@@ -3,24 +3,19 @@
 namespace Model;
 
     /**
-        * @property int $document_id
+        * @property int $handout_id
         * @property int $book_item_id
 		* @property int $category
-		* @property int $count  
         */
 
-    class DocumentItemModel extends \_Model
+    class  HandoutItemModel extends \_Model
     {   
         protected static $__scheme = [
-			'table_name' => 'document_item', 
+			'table_name' => 'handout_items', 
 			'fields' => [
-				'document_id', 'book_item_id', 'category', 'count', 'department_id' 
+				'handout_id', 'book_item_id', 'category', 'ord',
 			],
 			'joins' => [
-				'document' => [
-					'table' => 'document',
-					'on' => "document_item.document_id=document.id"
-				],
 				'item' => [
 					'table' => 'book_item',
 					'on' => "book_item_id=item.id"

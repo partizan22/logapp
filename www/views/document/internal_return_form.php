@@ -2,24 +2,23 @@
 
 	use Helpers\FormGridHelper;
 	
-	$document_name = 'Нова приходна накладна';
+	$document_name = 'Нова внутрішня здавальна накладна';
 	$title = $document_name;
-	
-	
+
 ?>
 
 <script>
 	var lang = {
-		add_subj_title: 'Додати юр. особу в довідник',
-		add_article_title: 'Додати позицію в довідник номенклатури',
-		article_search_no_records: 'Нічого не	знайдено. Використовуйте кнопку "Створити позицію" щоб додати нову позицію в довідник номенклатури.',
+		add_subj_title: 'Додати підрозділ в довідник',
+		//add_article_title: 'Додати позицію в довідник номенклатури',
+		article_search_no_records: 'Нічого не	знайдено.',
 		items_no_records: 'Виберіть позиції з довідника номенклатури.'		
-	}
+	};
 	
-	var subject_type = 'source';
-	var items_editable = true;
+	var subject_type = 'department';
+	var from_department  = 'subject';
+	var items_editable = false;
 	var subject_required = true;
-	
 	
 </script>
 
@@ -30,12 +29,10 @@
 <div class="container">
 	
 	<?php FormGridHelper::grid([
-		'reg_number' => 'Реєстраційний номер',
-		'reg_date' =>  ['Дата реєстрації', 'ad_class' => 'datepicker'],
 		'number' => 'Номер документа',
 		'date' => ['Дата документа', 'ad_class' => 'datepicker'],
 		'subject_id' => [
-			'Від кого',
+			'Підрозділ',
 			'type' => 'select',
 			'ad_class' => 'subject-select',
 			'render' => function($item){
@@ -50,7 +47,7 @@
 			}
 		]
 	], [
-		'col-12 col-sm-6 col-lg-3', '*', "*", '*', 'col'
+		'col-12 col-sm-6', '*', 'col'
 	]) ?>
 	
 	<hr>
@@ -75,15 +72,17 @@
 	</div>
 	
 	<div class="row">
-		<h3 class="col-9">Пошук позицій:</h3>
-		<div class="col-3" style="text-align: right"><button class="btn btn-info " id="btn-add-article" >Створити позицію</button></div>
+		<h3 class="col-12">Пошук позицій:</h3>
 	</div>
 	
-	<table class="article-search-table" id="article-search-table">
+	<table class="available_items_search_datatable" id="available_items_search_datatable">
 		<thead>
 			<tr>
 				<th width="150">Код номенклатури</th>
 				<th>Найменування</th>
+				<th width="60">Кат.</th>
+				<th width="100">Кількіcть</th>
+				<th width="100">Ціна</th>
 			</tr>
 		</thead>
 		<tbody></tbody>
@@ -102,7 +101,7 @@
 	
 	<div id="add-subject-dialog">
 		<?php FormGridHelper::grid([
-			'add-subject-name' => 'Назва юридичної особи'
+			'add-subject-name' => 'Назва підрозділу'
 		], [
 			'col'
 		]) ?>

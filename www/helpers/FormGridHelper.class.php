@@ -73,7 +73,7 @@
 			$d = '';
 			if (!empty($item['desc']))
 			{
-				$d = "<small class=\"form-text text-muted\">{$item['desc']}.</small>";
+				$d = "<small class=\"form-text text-muted\">{$item['desc']}</small>";
 			}
 			
 			echo "<div class='form-group {$class}'>

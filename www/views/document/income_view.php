@@ -325,6 +325,9 @@
 	</div>
 	
 	
-	
+	<div style="margin-top: 40px; margin-bottom: 40px; text-align: right; ">
+		<a href="#" style="width: 150px; margin-right: 60px" class="btn btn-primary export-link">Word</a> 
+		<button onclick="window.print();" style="width: 150px" class="btn btn-info">Друк</button>
+	</div>
 	
 </div>

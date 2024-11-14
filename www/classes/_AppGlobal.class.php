@@ -1,6 +1,6 @@
 <?php
-       
-    class AppGlobal
+
+    class _AppGlobal
     {
         /**
          * @var \BTF\DB\Provider $_db DB Provider
@@ -9,16 +9,21 @@
         
         protected static $_instance = false;
         
-		public static $account_id = 3;
+		public static $account_id = 1;
+		
+		public static $is_admin_mode = false;
+		public static $is_dev_mode = false;
 
 		public function __construct() {
-           
-			// Read the password from the file
-			$db_pass = trim(getenv('DB_PASSWORD'));
 			
-            $this->_db = BTF\DB\MySQLiProvider::connect('127.0.0.1', 'root', $db_pass);
+			if (self::$is_dev_mode)
+			{
+				define('SQL_SHOW_ERRORS', true);
+			}
 			
-            $this->_db->use_db(  'logapp' );
+            $this->_db = BTF\DB\MySQLiProvider::connect('localhost', 'root', 'root');
+            $this->_db->use_db( strpos($_SERVER['HTTP_HOST'], 'logappdev') !== false ? 'logapp_dev' : 'logapp');
+			//$this->_db->use_db(  'logapp2' );
             
         }
         
@@ -48,6 +53,9 @@
         {
             return self::i()->_db;
         }
-                        
-        
+		
+		public static function set_locals()
+		{
+			
+		}
     }

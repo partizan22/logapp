@@ -27,7 +27,7 @@
 		},
 		{
 			title: 'Акти списання',
-			types: ['write_off']
+			types: ['writeoff']
 		}
 	];
 		
@@ -65,6 +65,8 @@ ul.nav-tabs a.nav-link{
 	<a href="/document/form/?type=income" class="btn"><button class="btn">Створити приходну накладну</button></a>
 	<a href="/document/form/?type=internal" class="btn"><button class="btn">Створити внутрішню накладну</button></a>
 	<a href="/document/form/?type=outcome" class="btn"><button class="btn">Створити вихідну накладну</button></a>
+	
+	<a href="/document/form/?type=writeoff" class="btn"><button class="btn">Створити акт списання</button></a>
 	
 	<div style="height: 20px"></div>
 

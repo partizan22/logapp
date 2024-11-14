@@ -56,6 +56,13 @@
 		height: 30px;
 	}
 	
+	.remove{
+		color: red;
+		float: right;
+		margin-right: 10px;
+		cursor: pointer;
+	}
+	
 </style>
 
 <div class="container">

@@ -38,88 +38,9 @@ $().ready(function(){
 //        }
     });
     
-    add_subject_dialog = $('#add-subject-dialog').dialog({
-        title: lang.add_subj_title,
-        width: 350,
-        autoOpen: false,
-        buttons: [
-            {
-                text: "Додати",
-                'class': "btn btn-success",
-                click: function() {
-                  $( this ).dialog( "close" );
-                  request('data/create_subject', {name: $('input[name=add-subject-name]').val(), 'type' : (Array.isArray(subject_type) ? subject_type[0] : subject_type) }, subject_added);
-                }
-            }
-            /*{
-                text: "Скасувати",
-                'class': 'btn',
-                click: function() {
-                  $( this ).dialog( "close" );
-                }
-            } */
-        ]
-    });
-    
-    $('#add-article-dialog').dialog({
-        title: lang.add_article_title,
-        width: 450,
-        autoOpen: false,
-        buttons: [
-            {
-                text: "Додати",
-                'class': "btn btn-success",
-                click: function() {
-                  if (create_article())
-                  {
-                      $( this ).dialog( "close" );
-                  }
-                }
-            }
-            /*{
-                text: "Скасувати",
-                'class': 'btn',
-                click: function() {
-                  $( this ).dialog( "close" );
-                }
-            } */
-        ]
-    });
-    
-    $('#btn-add-subject').click(function(){
-        show_add_subject_dlg();
-    });
-    
-    $('#btn-add-article').click(function(){
-        show_add_article_dlg();
-    });
-    
     $(document).on('keyup', '.select2-search__field', function(e){       
        subject_search_text = $(e.currentTarget).val();
     });
-    
-    if ($('.article-search-table').length)
-    {
-        article_search_datatable = $('.article-search-table').DataTable( {
-            ajax: '/ajax.php?c=data&action=articles',
-            dom: 
-                    "<'row'<'col-sm-12'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'col-12'p>",
-                    //"<'row'<'col-sm-12 col-md-4'i><'col-sm-12 col-md-4'l><'col-sm-12 col-md-4'p>>",
-            language: arr_ext(dataTables_language, {
-                zeroRecords: lang.article_search_no_records,
-                search: ''
-            }),
-            columns: [
-                {data: 'number'},
-                {data: 'name'}
-            ],
-            rowCallback: function( row, data ) {
-               $(row).attr('data-article-id', data.id);
-              }
-        } );
-    }
     
     if ($('.available_items_search_datatable').length)
     {
@@ -137,11 +58,12 @@ $().ready(function(){
             zeroRecords: lang.items_no_records,
         }),
         columns: [
-            {data: 'number'},
-            {data: 'name'},
+            {data: 'number', sortable: false},
+            {data: 'name', sortable: false},
             {
                 data: 'category',
                 searchable: false,
+                sortable: false,
                 render: function(data, type, row, meta){ 
                     
                     if (row.is_cat > 0)
@@ -176,20 +98,9 @@ $().ready(function(){
                 }
             },
             {
-                data: 'count',
-                searchable: false,
-                render: function(data, type, row, meta){
-                    if (type === 'display')
-                    {   
-                        return "<input  class='form-control' type='text' onchange='update_items_data(this)' data-row='"+ meta.row +"' data-name='count' value='"+ round_text(data) +"' />";
-                    }
-
-                    return data;
-                }
-            },
-            {
                 data: 'price',
                 searchable: false,
+                sortable: false,
                 render: function(data, type, row, meta){
                     if (type === 'display')
                     {   
@@ -232,17 +143,6 @@ $().ready(function(){
           }
     } );
     
-    $(document).on("click", '#article-search-table tr[data-article-id]', function() {
-        
-        var id = $(this).attr("data-article-id");
-        
-        console.log(id);
-        
-        request('data/get_article', {id: id}, function(result){
-            var item = arr_ext(result.data, {count: 1, category: (result.data.is_cat>0 ? 1 : '')});
-            items_datatable.rows.add([item]).draw();
-        });
-    });
     
     $(document).on("click", '#available_items_search_datatable tr[data-record-id]', function() {
         
@@ -389,12 +289,6 @@ function submit()
         return ;
     }
     
-    if (subject_required && ! $('[name=subject_id]').val() )
-    {
-        alert('Виберіть підрозділ!');
-        return;
-    }
-    
     if (items_datatable.data().length === 0)
     {
         alert('Не вибрано жодної позиції!');
@@ -405,23 +299,12 @@ function submit()
     
     items_datatable.data().each( function (row) {
         var price = parseFloat(row.price);
-        var count = parseFloat(row.count);
         
-        var d = {};
-        if (row.item_id)
-        {
-            d.item_id = row.item_id;
-        }
-        else
-        {
-            d.article_id = row.id;
-        }
-            
-        data.push( arr_ext(d, {
+        data.push({
+            item_id: row.item_id,
             category: row.category,
-            price: price,
-            count: count
-        }));
+            price: price
+        });
         
     } );
     
@@ -432,26 +315,16 @@ function submit()
             alert('Введіть ціну!');
             return;
         }
-        
-        if (!row.count )
-        {
-            alert('Введіть кількість!');
-            return;
-        }
     }
     
-    request('document/create', {
-        type : document_type,
+    request('handout/create', {
         document: {
-            'reg_number': $('[name=reg_number]').val(),
-            'reg_date' : $('[name=reg_date]').val(),
             'number' : $('[name=number]').val(),
-            'date' : $('[name=date]').val(),
-            'subject_id' : $('[name=subject_id]').val()
+            'date' : $('[name=date]').val()
         },
         items: data
     }, function(result){
-        window.location.href = '?c=document&a=view&id=' + result.document.id;
+        window.location.href = '/handout/fill/?id=' + result.id;
     });
     
 }

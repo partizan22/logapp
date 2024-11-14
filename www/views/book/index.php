@@ -24,6 +24,8 @@
 	<a href="/document/form/?type=internal" class="btn"><button class="btn">Нова внутрішня накладна</button></a>
 	<a href="/document/form/?type=outcome" class="btn"><button class="btn">Нова вихідна накладна</button></a>
 	
+	<a href="/document/form/?type=writeoff" class="btn"><button class="btn">Новий акт списання</button></a>
+	
 	<div style="height: 20px"></div>
 	
 	<div class="checked-item" style="display: none">

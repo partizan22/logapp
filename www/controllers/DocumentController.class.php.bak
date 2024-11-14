@@ -59,8 +59,6 @@ class DocumentController extends \_Controller{
 		$this->_include_js[] = 'form.js';		
 		$this->_js_data['document_type'] = $type;
 		
-		$this->_js_data['numbering_type'] = DocumentModel::_numbering_type($type);
-		
 		$type = DocumentModel::_type($type);
 		
 		$this->_view_name = "{$type}_form";
@@ -71,9 +69,9 @@ class DocumentController extends \_Controller{
 		}
 	}
 	
-	public function action_form_writeoff($request)
+	public function action_writeoff_form($request)
 	{
-		$this->_include_js = ['writeoff_form.js'];
+		$this->_include_js[] = 'writeoff_form.js';	
 		
 		$type = 'writeoff';
 		$this->_js_data['document_type'] = $type;		
@@ -184,7 +182,7 @@ class DocumentController extends \_Controller{
 		$y = date('Y');
 		$document = DocumentModel::query()->where([
 			'account_id' => $this->account_id, 
-			'type' => ($request['type'] == 'internal') ? ['internal', 'internal_return'] : DocumentModel::_numbering_type($request['type']),
+			'type' => $request['type'],
 			"`date` >= '$y-01-01'"
 		])->order_by(SQLExpression::E('CAST(reg_number as unsigned)'), 'desc')->limit(1)->single();
 		
@@ -221,62 +219,6 @@ class DocumentController extends \_Controller{
 		
 		$file = $processor->save();
 		readfile($file);
-		exit();
-	}
-	
-	public function action_invent($request)
-	{
-		
-//		$dep = $request['dep'];
-//		
-//		if ($dep == 'storage')
-//		{
-//			$dep_name = 'Склад';
-//			$s = "r.type='storage'"; 
-//		}
-//		else
-//		{
-//			$sbj = \Model\SubjectModel::select_by_id($dep);
-//			$dep_name = $sbj->name;
-//			$s = "r.type='department' AND r.department_id={$sbj->id}";
-//		}
-//		
-		$q = "
-			SELECT a.name, bi.price, a.number, a.unit, r.value  cnt,  IF(r.type='storage', 'склад', s.name)  as dep
-			FROM book_record r
-			INNER JOIN book_item bi on bi.id=r.item_id
-			INNER JOIN article a on bi.article_id=a.id
-			LEFT JOIN subject s ON s.id=r.department_id
-			WHERE r.type IN ('storage','department') AND r.active AND r.value > 0 AND bi.account_id=3 AND r.category IS NULL
-			ORDER BY  a.name, a.number
-		";
-		
-		$data_by_dep = []; 
-		foreach (\AppGlobal::db()->query($q) as $row)
-		{
-			$data_by_dep[$row['dep']][] = $row;
-		}
-				
-		$form = "./docforms/invent.php";
-		
-		if (!file_exists($form))
-		{
-			return;
-		}
-
-//		error_reporting(0);
-//		foreach ($data_by_dep as $dep_name => $data)
-//		{
-//			$filename = "./inv/{$dep_name}.xlsx";
-//			include $form;
-//		}
-		
-		ksort($data_by_dep);
-		
-		include './docforms/inv-title.php';
-		$file = $processor->save();
-		
-		copy($file, './inv/title.docx');
 		exit();
 	}
     

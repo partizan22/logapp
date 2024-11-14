@@ -9,13 +9,12 @@ var subject_search_text = '';
 
 var items_datatable = false;
 var article_search_datatable = false;
-var available_items_search_datatable = false;
 
 var available_items = {};
 
 $().ready(function(){
     
-    request('document/get_number', {type: numbering_type}, function(result){
+    request('document/get_number', {type: document_type}, function(result){
        if ($('[name=reg_number]').length)
        {
            $('[name=reg_number]').val(result.number);
@@ -123,7 +122,39 @@ $().ready(function(){
     
     if ($('.available_items_search_datatable').length)
     {
-        request_available_items();        
+        
+        request('book/get_available_items', {department: from_department}, function(result){
+            
+            available_items = {};
+            for (var i of result.data)
+            {
+                available_items[i.record_id] = i;
+            }
+            
+            available_items_search_datatable = $('.available_items_search_datatable').DataTable( {
+                data: result.data,
+                dom: 
+                        "<'row'<'col-sm-12'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'col-12'p>",
+                        //"<'row'<'col-sm-12 col-md-4'i><'col-sm-12 col-md-4'l><'col-sm-12 col-md-4'p>>",
+                language: arr_ext(dataTables_language, {
+                    zeroRecords: lang.article_search_no_records,
+                    search: ''
+                }),
+                columns: [
+                    {data: 'number'},
+                    {data: 'name'},
+                    {data: 'category'},
+                    {data: 'count'},
+                    {data: 'price'}
+                ],
+                rowCallback: function( row, data ) {
+                   $(row).attr('data-record-id', data.record_id);
+                  }
+            } );
+            
+        });
     }
     
     
@@ -209,29 +240,6 @@ $().ready(function(){
         ]
     } );
     
-    available_items_search_datatable = $('.available_items_search_datatable').DataTable( {
-        data: [],
-        dom: 
-                "<'row'<'col-sm-12'f>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'col-12'p>",
-                //"<'row'<'col-sm-12 col-md-4'i><'col-sm-12 col-md-4'l><'col-sm-12 col-md-4'p>>",
-        language: arr_ext(dataTables_language, {
-            zeroRecords: lang.article_search_no_records,
-            search: ''
-        }),
-        columns: [
-            {data: 'number'},
-            {data: 'name'},
-            {data: 'category'},
-            {data: 'count'},
-            {data: 'price'}
-        ],
-        rowCallback: function( row, data ) {
-           $(row).attr('data-record-id', data.record_id);
-          }
-    } );
-    
     $(document).on("click", '#article-search-table tr[data-article-id]', function() {
         
         var id = $(this).attr("data-article-id");
@@ -259,43 +267,7 @@ $().ready(function(){
         dateFormat: 'dd.mm.yy'
     });
     
-    if (from_department === 'subject')
-    {
-        $('[name=subject_id]').change(function(){
-            request_available_items();
-        });
-        
-    }
-    
 });
-
-function request_available_items()
-{
-    var from = from_department;
-    if (from === 'subject')
-    {
-        var subject_id = $('[name=subject_id]').val();
-        if (!subject_id)
-        {
-            return ;
-        }
-        
-        from = subject_id;
-    }
-    
-    request('book/get_available_items', {department: from}, function(result){
-
-        available_items = {};
-        for (var i of result.data)
-        {
-            available_items[i.record_id] = i;
-        }
-        
-        available_items_search_datatable.clear();
-        available_items_search_datatable.rows.add(result.data).draw();
-
-    });
-}
 
 function add_item_from_available_table(record_id)
 {
@@ -377,18 +349,6 @@ function create_article(){
 
 function submit()
 {
-    if (!$('[name=number]').val())
-    {
-        alert('Введіть номер документу!');
-        return ;
-    }
-    
-    if (!$('[name=date]').val())
-    {
-        alert('Введіть дату документу!');
-        return ;
-    }
-    
     if (subject_required && ! $('[name=subject_id]').val() )
     {
         alert('Виберіть підрозділ!');

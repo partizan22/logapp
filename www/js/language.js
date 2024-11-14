@@ -16,5 +16,14 @@ var document_names = {
 		'income_act': 'Акт приймання-передачі',
 		'internal' : 'Внутрішня накладна',
                 'outcome': 'Вихідна накладна',
+                'writeoff': 'Акт списання'
 	};
-	
+
+var book_document_names = {
+		'income' : 'Накладна',
+		'income_act': 'Акт приймання-передачі',
+		'internal' : 'Накладна',
+                'internal_return' : 'Накладна',
+                'outcome': 'Накладна',
+                'writeoff': 'Акт списання'
+	};

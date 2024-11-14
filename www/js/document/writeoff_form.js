@@ -121,6 +121,12 @@ $().ready(function(){
         dateFormat: 'dd.mm.yy'
     });
     
+    $(document).on("click", '.remove[data-idx]', function() {
+        var idx = $(this).attr("data-idx");
+        selected_items.splice(idx, 1);
+        render_selected();
+    });
+    
 });
 
 function add_item_from_available_table(item_id, cat)
@@ -169,9 +175,10 @@ function render_selected()
         }
     }
     
-    for (let item of selected_items)
+    for (let i in selected_items)
     {
-        $('.selected-table thead > tr').append(`<th><span class="number">${item.number}</span> <span class='name'>${item.name}</span><br /><span class="label">Ціна:</span> <span class="price">${item.price} грн</span></th>`);
+        let item = selected_items[i];
+        $('.selected-table thead > tr').append(`<th><div class="remove" data-idx="`+ i +`">X</div><span class="number">${item.number}</span> <span class='name'>${item.name}</span><br /><span class="label">Ціна:</span> <span class="price">${item.price} грн</span></th>`);
     }
     
     for (let dep_id in current_departments)
@@ -188,8 +195,8 @@ function render_selected()
                 let count = item.available_by_departments[dep_id];
                 let input = $('<input type="number" step="1" min="0">');
                 input.attr('max', count);
-                input.attr('selected-index', i);
-                input.attr('dep-id', dep_id);
+                input.attr('data-selected-index', i);
+                input.attr('data-dep-id', dep_id);
                 input.val(item.selected_by_departments[dep_id]);
                 input.attr('onchange', 'update_items_data(this)');
                 cell.append(input);
@@ -201,10 +208,9 @@ function render_selected()
         
         $('.selected-table tbody').append(row);
     }
-    
-    
-    
 }
+
+
 
 function show_add_subject_dlg(){
     $('input[name=add-subject-name]').val(subject_search_text);
@@ -220,90 +226,72 @@ function subject_added(result)
 
 function update_items_data(e)
 {
-    var name = $(e).attr('data-name');
-    var row = $(e).attr('data-row');
+    var idx = parseInt($(e).attr('data-selected-index'));
+    var dep_id = $(e).attr('data-dep-id');
+    var max = parseFloat($(e).attr('max'));
+            
+    var val = parseFloat($(e).val());
     
-    var val = $(e).val();
-    
-    if ((name === 'price') || (name === 'count'))
+    if (!val)
     {
-        val = round(val);
+        return ;
     }
     
-    var data =  items_datatable.row( row )
-        .data(  );
-
-    data[name] = val;
-
-    items_datatable.row( row )
-        .data( data )
-        .draw( false );
+    if (val > max)
+    {
+        alert('Кількість більше наявності!');
+        val = max;
+    }
     
+    selected_items[idx].selected_by_departments[dep_id] =  val;
 }
 
 function submit()
 {
+    if (!$('[name=number]').val())
+    {
+        alert('Введіть номер документу!');
+        return ;
+    }
+    
+    if (!$('[name=date]').val())
+    {
+        alert('Введіть дату документу!');
+        return ;
+    }
+    
     if (subject_required && ! $('[name=subject_id]').val() )
     {
-        alert('Виберіть підрозділ!');
+        alert('Виберіть "Підрозділ"!');
         return;
     }
     
-    if (items_datatable.data().length === 0)
+    var items = [];
+    for (var i of selected_items)
     {
-        alert('Не вибрано жодної позиції!');
-        return;
-    }
-    
-    var data = [];
-    
-    items_datatable.data().each( function (row) {
-        var price = parseFloat(row.price);
-        var count = parseFloat(row.count);
-        
-        var d = {};
-        if (row.item_id)
+        for (var dep_id in i.selected_by_departments)
         {
-            d.item_id = row.item_id;
-        }
-        else
-        {
-            d.article_id = row.id;
-        }
-            
-        data.push( arr_ext(d, {
-            category: row.category,
-            price: price,
-            count: count
-        }));
-        
-    } );
-    
-    for (var row of data)
-    {
-        if (!row.price )
-        {
-            alert('Введіть ціну!');
-            return;
-        }
-        
-        if (!row.count )
-        {
-            alert('Введіть кількість!');
-            return;
+            var cnt = i.selected_by_departments[dep_id];
+            if (cnt > 0.00001)
+            {
+                items.push({
+                    dep_id: dep_id,
+                    item_id: i.item_id,
+                    category: i.category,
+                    count: cnt
+                });
+            }
         }
     }
-    
+        
     request('document/create', {
         type : document_type,
         document: {
-            'reg_number': $('[name=reg_number]').val(),
-            'reg_date' : $('[name=reg_date]').val(),
             'number' : $('[name=number]').val(),
             'date' : $('[name=date]').val(),
             'subject_id' : $('[name=subject_id]').val()
         },
-        items: data
+        items: items
     }, function(result){
         window.location.href = '?c=document&a=view&id=' + result.document.id;
     });
