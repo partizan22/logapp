@@ -2,6 +2,8 @@
 
 include '../f2/init.php';
 
+include './loc/AppGlobal.class.php';
+
 spl_autoload_register(function ($class) {
     
     foreach (['classes', 'models', 'controllers', 'helpers'] as $dir)
