@@ -21,7 +21,10 @@
 				define('SQL_SHOW_ERRORS', true);
 			}
 			
-            $this->_db = BTF\DB\MySQLiProvider::connect('localhost', 'root', 'root');
+            $db_pass = trim(getenv('DB_PASSWORD'));
+			
+            $this->_db = BTF\DB\MySQLiProvider::connect('127.0.0.1', 'root', $db_pass);
+			
             $this->_db->use_db( strpos($_SERVER['HTTP_HOST'], 'logappdev') !== false ? 'logapp_dev' : 'logapp');
 			//$this->_db->use_db(  'logapp2' );
             
